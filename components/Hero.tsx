@@ -11,13 +11,14 @@ import type { Home } from "../lib/cms";
 gsap.registerPlugin(ScrollTrigger);
 
 /** Split a heading into per-word spans for the clipped reveal. */
-function Words({ text }: { text: string }) {
+function Words({ text }: { text?: string }) {
+  const words = (text ?? "").split(" ");
   return (
     <span className="reveal-words">
-      {text.split(" ").map((w, i) => (
+      {words.map((w, i) => (
         <span className="word" key={i}>
           <span>{w}</span>
-          {i < text.split(" ").length - 1 ? " " : ""}
+          {i < words.length - 1 ? " " : ""}
         </span>
       ))}
     </span>
