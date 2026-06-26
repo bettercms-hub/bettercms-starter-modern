@@ -1,0 +1,48 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { getEntry, listEntries } from "../../../lib/content";
+import { items, type CaseStudy } from "../../../lib/cms";
+import { bcmsField } from "../../../lib/bcms";
+import { seo, caseStudySchema } from "../../../lib/seo";
+import { JsonLd } from "../../../components/JsonLd";
+
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return listEntries<CaseStudy>("case-study").map((e) => ({ slug: e.slug }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const study = getEntry<CaseStudy>("case-study", slug);
+  return study ? seo({ title: study.data.title, metaDescription: study.data.summary }).metadata : {};
+}
+
+export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const study = getEntry<CaseStudy>("case-study", slug);
+  if (!study) notFound();
+
+  const f = study.data;
+  const metrics = items(f.metrics);
+  const { jsonLd } = seo({ title: f.title, metaDescription: f.summary, schema: caseStudySchema(f) });
+
+  return (
+    <main>
+      <JsonLd data={jsonLd} />
+      <article className="article">
+        <Link className="back-link" href="/case-studies">← Back to work</Link>
+        {f.client && <p className="kicker" style={{ color: "var(--accent-strong)", fontWeight: 600, marginTop: "1.5rem" }}>{f.client}</p>}
+        <h1 {...bcmsField("case-study.title")} style={{ marginTop: "0.5rem" }}>{f.title}</h1>
+        {f.summary && <p className="lead" style={{ marginTop: "1rem" }}>{f.summary}</p>}
+        {f.coverImage?.url && <img className="cover" src={f.coverImage.url} alt={f.coverImage.alt ?? ""} />}
+        {metrics.length > 0 && (
+          <div className="stats" style={{ marginBottom: "2rem" }} {...bcmsField("case-study.metrics", "array")}>
+            {metrics.map((m, i) => <div className="stat" key={i}><div className="num">{m.value}</div><div className="lbl">{m.label}</div></div>)}
+          </div>
+        )}
+        {f.body?.html && <div className="prose" {...bcmsField("case-study.body", "richtext")} dangerouslySetInnerHTML={{ __html: f.body.html }} />}
+      </article>
+    </main>
+  );
+}

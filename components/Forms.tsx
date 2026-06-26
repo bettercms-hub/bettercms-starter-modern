@@ -1,0 +1,156 @@
+"use client";
+
+import { useState } from "react";
+import {
+  submitForm,
+  shouldShowField,
+  formInitialValues,
+  type DeliveryForm,
+  type DeliveryFormField,
+  type FormValues,
+} from "@betttercms/sdk";
+
+const API = process.env.NEXT_PUBLIC_BCMS_API_URL || "https://api.bettercms.ai";
+
+/** Shared submit state + handler over the SDK's submitForm (throws BetterCMSError w/ .fieldErrors). */
+function useSubmit(form: DeliveryForm) {
+  const [values, setValues] = useState<FormValues>(() => formInitialValues(form));
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
+
+  const set = (key: string, value: string | boolean) => setValues((v) => ({ ...v, [key]: value }));
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("sending");
+    setErrors({});
+    try {
+      await submitForm({ formId: form.id, data: values, baseUrl: API });
+      setStatus("done");
+      if (form.redirectUrl) window.location.assign(form.redirectUrl);
+    } catch (err) {
+      const fe = (err as { fieldErrors?: Record<string, string> }).fieldErrors;
+      if (fe) setErrors(fe);
+      setStatus("error");
+    }
+  }
+
+  return { values, set, errors, status, submit };
+}
+
+function Field({ field, value, error, onChange }: {
+  field: DeliveryFormField;
+  value: string | boolean;
+  error?: string;
+  onChange: (v: string | boolean) => void;
+}) {
+  const id = `f-${field.key}`;
+  const label = (
+    <label htmlFor={id}>{field.label}{field.required && <span className="req"> *</span>}</label>
+  );
+  const common = { id, "aria-invalid": !!error, required: field.required } as const;
+
+  if (field.type === "textarea") {
+    return (
+      <div className="field">
+        {label}
+        <textarea {...common} className="textarea" placeholder={field.placeholder} value={String(value)} onChange={(e) => onChange(e.target.value)} />
+        {error && <span className="field-error">{error}</span>}
+      </div>
+    );
+  }
+  if (field.type === "select") {
+    return (
+      <div className="field">
+        {label}
+        <select {...common} className="select" value={String(value)} onChange={(e) => onChange(e.target.value)}>
+          <option value="">Select…</option>
+          {(field.options ?? []).map((o) => <option key={o} value={o}>{o}</option>)}
+        </select>
+        {error && <span className="field-error">{error}</span>}
+      </div>
+    );
+  }
+  if (field.type === "checkbox" || field.type === "consent") {
+    return (
+      <div className="field">
+        <label htmlFor={id} style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+          <input {...common} type="checkbox" checked={!!value} onChange={(e) => onChange(e.target.checked)} />
+          <span>{field.label}{field.required && <span className="req"> *</span>}</span>
+        </label>
+        {error && <span className="field-error">{error}</span>}
+      </div>
+    );
+  }
+  return (
+    <div className="field">
+      {label}
+      <input
+        {...common}
+        type={field.type === "hidden" ? "text" : field.type}
+        className="input"
+        placeholder={field.placeholder}
+        value={String(value)}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {error && <span className="field-error">{error}</span>}
+    </div>
+  );
+}
+
+/** Honeypot: a real-looking field hidden from humans; bots that fill it are flagged server-side. */
+function Honeypot({ name, value, onChange }: { name: string; value: string | boolean; onChange: (v: string) => void }) {
+  return (
+    <div className="visually-hidden" aria-hidden>
+      <input tabIndex={-1} autoComplete="off" name={name} value={String(value)} onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+
+export function ContactForm({ form }: { form: DeliveryForm }) {
+  const { values, set, errors, status, submit } = useSubmit(form);
+  if (status === "done") {
+    return <p className="form-status ok">{form.successMessage ?? "Thanks! We'll be in touch soon."}</p>;
+  }
+  const honeypot = form.honeypotField ?? null;
+  return (
+    <form className="form" onSubmit={submit} noValidate>
+      {form.fields
+        .filter((f) => f.key !== honeypot && shouldShowField(f, values))
+        .map((f) => (
+          <Field key={f.key} field={f} value={values[f.key] ?? ""} error={errors[f.key]} onChange={(v) => set(f.key, v)} />
+        ))}
+      {honeypot && <Honeypot name={honeypot} value={values[honeypot] ?? ""} onChange={(v) => set(honeypot, v)} />}
+      {status === "error" && Object.keys(errors).length === 0 && (
+        <p className="field-error">Something went wrong. Please try again.</p>
+      )}
+      <button className="btn btn--accent" type="submit" disabled={status === "sending"}>
+        {status === "sending" ? "Sending…" : (form.submitLabel ?? "Send")} <span className="arrow">→</span>
+      </button>
+    </form>
+  );
+}
+
+export function NewsletterForm({ form }: { form: DeliveryForm }) {
+  const { values, set, status, submit } = useSubmit(form);
+  const honeypot = form.honeypotField ?? null;
+  const emailKey = form.fields.find((f) => f.type === "email")?.key ?? "email";
+  if (status === "done") return <p className="form-status ok">{form.successMessage ?? "You're subscribed."}</p>;
+  return (
+    <form className="newsletter" onSubmit={submit} noValidate>
+      <input
+        className="input"
+        type="email"
+        required
+        placeholder="you@company.com"
+        aria-label="Email"
+        value={String(values[emailKey] ?? "")}
+        onChange={(e) => set(emailKey, e.target.value)}
+      />
+      {honeypot && <Honeypot name={honeypot} value={values[honeypot] ?? ""} onChange={(v) => set(honeypot, v)} />}
+      <button className="btn" type="submit" disabled={status === "sending"}>
+        {status === "sending" ? "…" : (form.submitLabel ?? "Subscribe")}
+      </button>
+    </form>
+  );
+}

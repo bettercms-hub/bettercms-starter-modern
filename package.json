@@ -1,0 +1,31 @@
+{
+  "name": "bettercms-starter-modern",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BetterCMS Modern Aesthetic Starter (Next.js) — a premium, animated studio site (Home, About, Contact with form, Blog, Case Studies, search, schema markup, custom code), rendered from a BetterCMS project.",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "fetch-content": "node scripts/fetch-content.mjs",
+    "test:integration": "vitest run"
+  },
+  "dependencies": {
+    "@betttercms/sdk": "^1.6.0",
+    "@gsap/react": "^2.1.2",
+    "gsap": "^3.13.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
+  "overrides": {
+    "@betttercms/types": "1.5.0"
+  }
+}
