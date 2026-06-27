@@ -68,8 +68,7 @@ export function SearchModal({
             ref={inputRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={project ? "Search articles, work, pages…" : "Search is being set up…"}
-            disabled={!project}
+            placeholder="Search articles, work, pages…"
             aria-label="Search query"
           />
           <button className="icon-btn" onClick={onClose} aria-label="Close search">Esc</button>
@@ -82,7 +81,9 @@ export function SearchModal({
               {h.snippet && <span className="s" dangerouslySetInnerHTML={{ __html: h.snippet }} />}
             </Link>
           ))}
-          {!loading && q.trim().length >= 2 && hits.length === 0 && <p className="search-empty">No results for “{q}”.</p>}
+          {!loading && q.trim().length >= 2 && hits.length === 0 && (
+            <p className="search-empty">{project ? `No results for “${q}”.` : "Search is temporarily unavailable."}</p>
+          )}
           {q.trim().length < 2 && <p className="search-empty">Type at least two characters to search.</p>}
         </div>
       </div>

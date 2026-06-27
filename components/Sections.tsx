@@ -8,7 +8,7 @@ export function Stats({ data, onInk = false }: { data?: Stat[]; onInk?: boolean 
   return (
     <div className={`stats${onInk ? "" : ""} reveal`} {...bcmsField("home.stats", "array")}>
       {list.map((s, i) => (
-        <div className="stat" key={i}>
+        <div className="stat" key={s.label ?? i}>
           <div className="num">{s.value}</div>
           <div className="lbl">{s.label}</div>
         </div>
@@ -29,7 +29,7 @@ export function Features({ heading, data }: { heading?: string; data: Feature[] 
       )}
       <div className="bento" {...bcmsField("home.features", "array")}>
         {data.map((f, i) => (
-          <article className="feature reveal" key={i}>
+          <article className="feature reveal" key={f.title ?? i}>
             {f.icon && <div className="ic" aria-hidden>{f.icon}</div>}
             <h3>{f.title}</h3>
             {f.body && <p>{f.body}</p>}
@@ -50,7 +50,7 @@ export function LogoMarquee({ data }: { data: Logo[] }) {
       </div>
       <div className="marquee" {...bcmsField("home.logos", "array")}>
         <div className="marquee-track">
-          {loop.map((l, i) => <span className="logo" key={i}>{l.name ?? l.image?.alt}</span>)}
+          {loop.map((l, i) => <span className="logo" key={`${l.name ?? l.image?.alt}-${i}`}>{l.name ?? l.image?.alt}</span>)}
         </div>
       </div>
     </section>
@@ -67,7 +67,7 @@ export function Testimonials({ data }: { data: Testimonial[] }) {
       </div>
       <div className="quotes" {...bcmsField("home.testimonials", "array")}>
         {data.map((t, i) => (
-          <figure className="quote reveal" key={i}>
+          <figure className="quote reveal" key={t.authorName ?? t.quote ?? i}>
             <blockquote>“{t.quote}”</blockquote>
             <figcaption className="who">
               {t.avatar?.url && <img src={t.avatar.url} alt={t.avatar.alt ?? t.authorName ?? ""} />}
