@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -16,10 +16,10 @@ function Words({ text }: { text?: string }) {
   return (
     <span className="reveal-words">
       {words.map((w, i) => (
-        <span className="word" key={i}>
-          <span>{w}</span>
+        <Fragment key={i}>
+          <span className="word"><span>{w}</span></span>
           {i < words.length - 1 ? " " : ""}
-        </span>
+        </Fragment>
       ))}
     </span>
   );
