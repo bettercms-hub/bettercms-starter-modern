@@ -36,8 +36,8 @@ for (const e of entries?.items ?? []) {
 }
 
 // Project id powers public site search (?project=…). The deploy Action injects BCMS_PROJECT_ID;
-// fall back to the projectId embedded in an entry's _meta. Null → search degrades to disabled.
-const projectId = process.env.BCMS_PROJECT_ID ?? entries?.items?.[0]?._meta?.projectId ?? null;
+// fall back to the projectId the delivery API returns on the entries response. Null → search disabled.
+const projectId = process.env.BCMS_PROJECT_ID ?? entries?.projectId ?? null;
 
 const snapshot = {
   $schema: "bcms-content/v1",
