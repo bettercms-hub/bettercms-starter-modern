@@ -11,7 +11,7 @@ point it at any BetterCMS project with the same model slugs.
   Case Studies are collections. Every section is editable in the BetterCMS entry form.
 - **Animation** — GSAP + ScrollTrigger (hero word-reveal, parallax, staggered scroll reveals,
   magnetic CTAs, logo marquee). Fully respects `prefers-reduced-motion`.
-- **Site search** — a ⌘K modal over the public delivery search API (`@betttercms/sdk`'s `search()`).
+- **Site search** — a ⌘K modal over the public delivery search API (`@bettercms-ai/sdk`'s `search()`).
 - **Forms** — Contact + newsletter via `submitForm()` → `/api/v1/forms/public/:id/submissions`
   (honeypot, conditional fields, per-field validation).
 - **SEO + schema markup** — per-page `<title>`/OG/Twitter via `resolveSeo()`, plus JSON-LD
