@@ -12,7 +12,7 @@
     "test:integration": "vitest run"
   },
   "dependencies": {
-    "@betttercms/sdk": "^1.6.0",
+    "@bettercms-ai/sdk": "^1.6.0",
     "@gsap/react": "^2.1.2",
     "gsap": "^3.13.0",
     "next": "^15.0.0",
@@ -28,6 +28,6 @@
     "vitest": "^2.1.0"
   },
   "overrides": {
-    "@betttercms/types": "1.5.0"
+    "@bettercms-ai/types": "1.5.0"
   }
 }

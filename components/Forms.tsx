@@ -8,7 +8,7 @@ import {
   type DeliveryForm,
   type DeliveryFormField,
   type FormValues,
-} from "@betttercms/sdk";
+} from "@bettercms-ai/sdk";
 
 const API = process.env.NEXT_PUBLIC_BCMS_API_URL || "https://api.bettercms.ai";
 

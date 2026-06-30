@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { DeliveryForm } from "@betttercms/sdk";
+import type { DeliveryForm } from "@bettercms-ai/sdk";
 import { items, type NavLink, type Site, type Social } from "../lib/cms";
 import { NewsletterForm } from "./Forms";
 

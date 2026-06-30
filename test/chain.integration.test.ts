@@ -13,7 +13,7 @@
  *   BETTERCMS_MGMT_KEY   an API key with content:manage (provisions + cleans up)
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { BetterCMSManagementClient } from "@betttercms/sdk";
+import { BetterCMSManagementClient } from "@bettercms-ai/sdk";
 
 const API_URL = process.env.BETTERCMS_API_URL ?? "https://api.bettercms.ai";
 const WORKSPACE = process.env.BETTERCMS_WORKSPACE;

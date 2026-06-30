@@ -5,7 +5,7 @@
 export default {
   output: "export",
   images: { unoptimized: true },
-  // The contact/search/newsletter client components import @betttercms/sdk, which pulls in the SDK's
+  // The contact/search/newsletter client components import @bettercms-ai/sdk, which pulls in the SDK's
   // Node-only management client (dns/fs). Those paths never run in the browser, so stub the Node
   // builtins out of the client bundle.
   webpack: (config, { isServer }) => {

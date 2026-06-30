@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { resolveSeo } from "@betttercms/sdk";
+import { resolveSeo } from "@bettercms-ai/sdk";
 import { getSingleton } from "./content";
 import type { Author, BlogPost, CaseStudy, Site } from "./cms";
 
