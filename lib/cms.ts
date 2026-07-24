@@ -110,8 +110,19 @@ export const plain = (rt?: TextOrRich): string =>
  * markup. Spread into an element: `<h1 dangerouslySetInnerHTML={richHtml(f.title)} />`.
  */
 export const richHtml = (rt?: TextOrRich, fallback = ""): { __html: string } => {
-  const html = typeof rt === "string" ? escapeHtml(rt) : (rt?.html ?? "");
-  return { __html: html.trim() ? html : escapeHtml(fallback) };
+  const html = (typeof rt === "string" ? escapeHtml(rt) : (rt?.html ?? "")).trim();
+  return { __html: html ? unwrapLoneBlock(html) : escapeHtml(fallback) };
+};
+
+/**
+ * A field converted from `text` stores its value as a block (`<p>…</p>`), but it is rendered
+ * INSIDE the element that already is the block — an `<h1>`. `<h1><p>…</p></h1>` is invalid: the
+ * parser closes the heading at the `<p>`, so the text falls out of the heading and loses its
+ * styling. Unwrap a LONE wrapping block; a multi-block value keeps its structure.
+ */
+const unwrapLoneBlock = (html: string): string => {
+  const m = html.match(/^<(p|div|h[1-6])(?:\s[^>]*)?>([\s\S]*)<\/\1>$/i);
+  return m && !new RegExp(`</${m[1]}>`, "i").test(m[2]) ? m[2] : html;
 };
 
 const escapeHtml = (s: string): string =>
