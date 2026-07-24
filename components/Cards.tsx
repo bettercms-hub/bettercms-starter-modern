@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { refData, type Author, type BlogPost, type CaseStudy } from "../lib/cms";
+import { refData, richHtml, type Author, type BlogPost, type CaseStudy } from "../lib/cms";
 import type { Entry } from "../lib/content";
 
 export function BlogCard({ post }: { post: Entry<BlogPost> }) {
@@ -12,8 +12,8 @@ export function BlogCard({ post }: { post: Entry<BlogPost> }) {
       )}
       <div className="body">
         {f.tags?.[0] && <span className="kicker">{f.tags[0]}</span>}
-        <h3>{f.title}</h3>
-        {f.excerpt && <p>{f.excerpt}</p>}
+        <h3 dangerouslySetInnerHTML={richHtml(f.title)} />
+        {f.excerpt && <p dangerouslySetInnerHTML={richHtml(f.excerpt)} />}
         <div className="meta">{author ? `${author.name} · ` : ""}{f.publishedDate}</div>
       </div>
     </Link>
@@ -29,8 +29,8 @@ export function CaseCard({ study }: { study: Entry<CaseStudy> }) {
       )}
       <div className="body">
         {f.client && <span className="kicker">{f.client}</span>}
-        <h3>{f.title}</h3>
-        {f.summary && <p>{f.summary}</p>}
+        <h3 dangerouslySetInnerHTML={richHtml(f.title)} />
+        {f.summary && <p dangerouslySetInnerHTML={richHtml(f.summary)} />}
       </div>
     </Link>
   );

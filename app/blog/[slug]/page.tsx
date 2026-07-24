@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getEntry, listEntries } from "../../../lib/content";
-import { refData, type Author, type BlogPost } from "../../../lib/cms";
+import { plain, refData, richHtml, type Author, type BlogPost } from "../../../lib/cms";
 import { bcmsField } from "../../../lib/bcms";
 import { seo, blogPostingSchema } from "../../../lib/seo";
 import { JsonLd } from "../../../components/JsonLd";
@@ -15,7 +15,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = getEntry<BlogPost>("blog-post", slug);
-  return post ? seo({ title: post.data.title, metaDescription: post.data.excerpt }).metadata : {};
+  return post ? seo({ title: plain(post.data.title), metaDescription: plain(post.data.excerpt) }).metadata : {};
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -25,7 +25,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   const f = post.data;
   const author = refData<Author>(f.author);
-  const { jsonLd } = seo({ title: f.title, metaDescription: f.excerpt, schema: blogPostingSchema(f, author) });
+  const { jsonLd } = seo({ title: plain(f.title), metaDescription: plain(f.excerpt), schema: blogPostingSchema(f, author) });
 
   return (
     <main>
@@ -33,7 +33,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <article className="article">
         <Link className="back-link" href="/blog">← Back to journal</Link>
         {f.tags?.[0] && <p className="kicker" style={{ color: "var(--accent-strong)", fontWeight: 600, marginTop: "1.5rem" }}>{f.tags[0]}</p>}
-        <h1 {...bcmsField("blog-post.title")} style={{ marginTop: "0.5rem" }}>{f.title}</h1>
+        <h1 {...bcmsField("blog-post.title")} style={{ marginTop: "0.5rem" }} dangerouslySetInnerHTML={richHtml(f.title)} />
         <p className="byline">
           {author && <>By <strong>{author.name}</strong>{author.role ? `, ${author.role}` : ""}</>}
           {author && f.publishedDate ? " · " : ""}{f.publishedDate}

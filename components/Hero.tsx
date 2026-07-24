@@ -6,13 +6,15 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MagneticLink } from "./MagneticLink";
 import { bcmsField } from "../lib/bcms";
-import type { Home } from "../lib/cms";
+import { plain, richHtml, type Home, type TextOrRich } from "../lib/cms";
 
 gsap.registerPlugin(ScrollTrigger);
 
 /** Split a heading into per-word spans for the clipped reveal. */
-function Words({ text }: { text?: string }) {
-  const words = (text ?? "").split(" ");
+function Words({ text }: { text?: TextOrRich }) {
+  // ponytail: the reveal splits on words, so the hero title renders as text here. Inline marks
+  // would need an HTML-aware splitter — the Astro twin gets them because it splits at runtime.
+  const words = plain(text).split(" ");
   return (
     <span className="reveal-words">
       {words.map((w, i) => (
@@ -50,9 +52,9 @@ export function Hero({ data }: { data: Home }) {
   return (
     <section className="hero on-ink" ref={scope}>
       <div className="container">
-        {data.eyebrow && <p className="eyebrow hero-eyebrow" {...bcmsField("home.eyebrow")}>{data.eyebrow}</p>}
+        {data.eyebrow && <p className="eyebrow hero-eyebrow" {...bcmsField("home.eyebrow")} dangerouslySetInnerHTML={richHtml(data.eyebrow)} />}
         <h1 {...bcmsField("home.heroTitle")}><Words text={data.heroTitle} /></h1>
-        {data.heroSubtitle && <p className="lead hero-lead" {...bcmsField("home.heroSubtitle")}>{data.heroSubtitle}</p>}
+        {data.heroSubtitle && <p className="lead hero-lead" {...bcmsField("home.heroSubtitle")} dangerouslySetInnerHTML={richHtml(data.heroSubtitle)} />}
         <div className="hero-cta">
           {data.primaryCtaText && data.primaryCtaHref && (
             <MagneticLink href={data.primaryCtaHref} className="btn btn--accent">
