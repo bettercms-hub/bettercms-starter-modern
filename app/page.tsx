@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getSingleton } from "../lib/content";
-import { items, type Home, type Site } from "../lib/cms";
+import { items, plain, type Home, type Site } from "../lib/cms";
 import { seo } from "../lib/seo";
 import { JsonLd } from "../components/JsonLd";
 import { Hero } from "../components/Hero";
@@ -8,7 +8,7 @@ import { Stats, Features, LogoMarquee, Testimonials, CtaBand } from "../componen
 
 export function generateMetadata(): Metadata {
   const home = getSingleton<Home>("home");
-  return seo({ title: home?.heroTitle ?? "Home", metaDescription: home?.heroSubtitle }).metadata;
+  return seo({ title: plain(home?.heroTitle) || "Home", metaDescription: plain(home?.heroSubtitle) }).metadata;
 }
 
 export default function HomePage() {
@@ -28,7 +28,7 @@ export default function HomePage() {
     name: site?.brandName,
     description: site?.seoDescription,
   };
-  const { jsonLd } = seo({ title: home.heroTitle, metaDescription: home.heroSubtitle, schema: websiteSchema });
+  const { jsonLd } = seo({ title: plain(home.heroTitle) || "Home", metaDescription: plain(home.heroSubtitle), schema: websiteSchema });
 
   return (
     <>

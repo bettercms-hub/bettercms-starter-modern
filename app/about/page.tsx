@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { getSingleton } from "../../lib/content";
-import { items, refList, type About, type Author } from "../../lib/cms";
+import { items, plain, refList, richHtml, type About, type Author } from "../../lib/cms";
 import { bcmsField } from "../../lib/bcms";
 import { seo } from "../../lib/seo";
 import { JsonLd } from "../../components/JsonLd";
 
 export function generateMetadata(): Metadata {
   const about = getSingleton<About>("about");
-  return seo({ title: about?.heroTitle ?? "About", metaDescription: about?.heroSubtitle }).metadata;
+  return seo({ title: plain(about?.heroTitle) || "About", metaDescription: plain(about?.heroSubtitle) }).metadata;
 }
 
 export default function AboutPage() {
@@ -18,9 +18,9 @@ export default function AboutPage() {
   const stats = items(about.stats);
   const team = refList<Author>(about.team);
   const { jsonLd } = seo({
-    title: about.heroTitle,
-    metaDescription: about.heroSubtitle,
-    schema: { "@context": "https://schema.org", "@type": "AboutPage", name: about.heroTitle },
+    title: plain(about.heroTitle) || "About",
+    metaDescription: plain(about.heroSubtitle),
+    schema: { "@context": "https://schema.org", "@type": "AboutPage", name: plain(about.heroTitle) },
   });
 
   return (
@@ -29,9 +29,9 @@ export default function AboutPage() {
 
       <section className="section container">
         <div className="section-head reveal">
-          {about.eyebrow && <p className="eyebrow" {...bcmsField("about.eyebrow")}>{about.eyebrow}</p>}
-          <h1 {...bcmsField("about.heroTitle")}>{about.heroTitle}</h1>
-          {about.heroSubtitle && <p className="lead" style={{ marginTop: "1.25rem" }} {...bcmsField("about.heroSubtitle")}>{about.heroSubtitle}</p>}
+          {about.eyebrow && <p className="eyebrow" {...bcmsField("about.eyebrow")} dangerouslySetInnerHTML={richHtml(about.eyebrow)} />}
+          <h1 {...bcmsField("about.heroTitle")} dangerouslySetInnerHTML={richHtml(about.heroTitle, "About")} />
+          {about.heroSubtitle && <p className="lead" style={{ marginTop: "1.25rem" }} {...bcmsField("about.heroSubtitle")} dangerouslySetInnerHTML={richHtml(about.heroSubtitle)} />}
         </div>
         {about.heroImage?.url && (
           <figure className="hero-figure reveal" style={{ marginTop: "3rem" }} {...bcmsField("about.heroImage", "image")}>
@@ -43,7 +43,7 @@ export default function AboutPage() {
       {about.story?.html && (
         <section className="section--tight container">
           <div className="article" style={{ paddingBlock: 0 }}>
-            {about.storyTitle && <h2 className="reveal" {...bcmsField("about.storyTitle")}>{about.storyTitle}</h2>}
+            {about.storyTitle && <h2 className="reveal" {...bcmsField("about.storyTitle")} dangerouslySetInnerHTML={richHtml(about.storyTitle)} />}
             <div className="prose reveal" style={{ marginTop: "1.5rem" }} {...bcmsField("about.story", "richtext")} dangerouslySetInnerHTML={{ __html: about.story.html }} />
           </div>
         </section>
