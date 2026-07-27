@@ -18,8 +18,8 @@ point it at any BetterCMS project with the same model slugs.
   (Organization, WebSite, BlogPosting, Article).
 - **Custom code** — the `site` model's `customHeadHtml` / `customBodyEndHtml` are injected into the
   static document (inline tags parse and execute natively on load).
-- **Live preview** — editable fields carry `data-bcms-field` attributes when built with
-  `BCMS_ANNOTATE=1`, so the dashboard live preview maps them to inline editors.
+- **Live preview** — editable fields carry `data-bcms-field` attributes on every build, so the
+  dashboard live preview maps them to inline editors.
 
 ## Local development
 
