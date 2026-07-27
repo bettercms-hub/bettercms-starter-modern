@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { DeliveryForm } from "@bettercms-ai/sdk";
 import { items, type NavLink, type Site, type Social } from "../lib/cms";
+import { getForms } from "../lib/content";
 import { NewsletterForm } from "./Forms";
 
 export function Footer({ site, newsletter }: { site?: Site; newsletter?: DeliveryForm }) {
@@ -32,7 +33,7 @@ export function Footer({ site, newsletter }: { site?: Site; newsletter?: Deliver
             {newsletter && (
               <div>
                 <p className="tagline" style={{ marginTop: 0 }}>The studio journal, occasionally.</p>
-                <NewsletterForm form={newsletter} />
+                <NewsletterForm form={newsletter} turnstileSiteKey={getForms().turnstileSiteKey} />
               </div>
             )}
           </div>
