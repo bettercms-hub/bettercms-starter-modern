@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getForm, getSingleton } from "../../lib/content";
+import { getForm, getForms, getSingleton } from "../../lib/content";
 import { bcmsField } from "../../lib/bcms";
 import { plain, richHtml, type Contact } from "../../lib/cms";
 import { seo } from "../../lib/seo";
@@ -30,7 +30,7 @@ export default function ContactPage() {
           {contact?.heroSubtitle && <p className="lead" style={{ marginTop: "1.25rem" }} {...bcmsField("contact.heroSubtitle")} dangerouslySetInnerHTML={richHtml(contact.heroSubtitle)} />}
         </div>
         <div className="form-card reveal">
-          {form ? <ContactForm form={form} /> : <p className="lead">Add a form named “Contact” in BetterCMS to enable this form.</p>}
+          {form ? <ContactForm form={form} turnstileSiteKey={getForms().turnstileSiteKey} /> : <p className="lead">Add a form named “Contact” in BetterCMS to enable this form.</p>}
         </div>
       </div>
     </main>

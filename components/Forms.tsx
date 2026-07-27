@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Script from "next/script";
 import {
   submitForm,
   shouldShowField,
@@ -11,6 +12,13 @@ import {
 } from "@bettercms-ai/sdk";
 
 const API = process.env.NEXT_PUBLIC_BCMS_API_URL || "https://api.bettercms.ai";
+
+declare global {
+  interface Window {
+    /** Present only once Turnstile's api.js has loaded — always call it optionally. */
+    turnstile?: { reset: (widget?: string | HTMLElement) => void };
+  }
+}
 
 /** Shared submit state + handler over the SDK's submitForm (throws BetterCMSError w/ .fieldErrors). */
 function useSubmit(form: DeliveryForm) {
@@ -24,11 +32,23 @@ function useSubmit(form: DeliveryForm) {
     e.preventDefault();
     setStatus("sending");
     setErrors({});
+    // Turnstile injects a hidden `cf-turnstile-response` input into the form when the
+    // widget renders. Read it off the DOM rather than tracking it in React state: the
+    // widget is not a controlled input, and it also refreshes the token on its own
+    // schedule, so the DOM is the only place the CURRENT token is guaranteed to be.
+    // Undefined when no widget is present, which the SDK treats as "no CAPTCHA".
+    const formEl = e.currentTarget as HTMLFormElement;
+    const turnstileToken =
+      formEl.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]')?.value || undefined;
     try {
-      await submitForm({ formId: form.id, data: values, baseUrl: API });
+      await submitForm({ formId: form.id, data: values, turnstileToken, baseUrl: API });
       setStatus("done");
       if (form.redirectUrl) window.location.assign(form.redirectUrl);
     } catch (err) {
+      // Tokens are SINGLE-USE. Without this reset a recoverable error (a missing required
+      // field) leaves a spent token in the form, so the user's corrected resubmit fails
+      // the CAPTCHA instead — a form that looks permanently broken.
+      window.turnstile?.reset();
       const fe = (err as { fieldErrors?: Record<string, string> }).fieldErrors;
       if (fe) setErrors(fe);
       setStatus("error");
@@ -107,7 +127,29 @@ function Honeypot({ name, value, onChange }: { name: string; value: string | boo
   );
 }
 
-export function ContactForm({ form }: { form: DeliveryForm }) {
+/**
+ * Cloudflare Turnstile widget. Renders nothing without a site key, so a project with no
+ * Turnstile configured is unaffected.
+ *
+ * These forms were honeypot-only: `turnstileSiteKey` was already read in lib/content.ts
+ * but no widget was ever rendered and no token was ever sent, so enabling CAPTCHA on the
+ * form in BetterCMS did nothing here.
+ *
+ * Must sit INSIDE the <form> — that is what makes Turnstile inject the hidden
+ * `cf-turnstile-response` input that useSubmit reads. next/script with a stable `id`
+ * dedupes the loader when both forms appear on one page (contact page + footer).
+ */
+function Turnstile({ siteKey }: { siteKey?: string | null }) {
+  if (!siteKey) return null;
+  return (
+    <>
+      <div className="cf-turnstile" data-sitekey={siteKey} />
+      <Script id="cf-turnstile" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+    </>
+  );
+}
+
+export function ContactForm({ form, turnstileSiteKey }: { form: DeliveryForm; turnstileSiteKey?: string | null }) {
   const { values, set, errors, status, submit } = useSubmit(form);
   if (status === "done") {
     return <p className="form-status ok">{form.successMessage ?? "Thanks! We'll be in touch soon."}</p>;
@@ -121,6 +163,7 @@ export function ContactForm({ form }: { form: DeliveryForm }) {
           <Field key={f.key} field={f} value={values[f.key] ?? ""} error={errors[f.key]} onChange={(v) => set(f.key, v)} />
         ))}
       {honeypot && <Honeypot name={honeypot} value={values[honeypot] ?? ""} onChange={(v) => set(honeypot, v)} />}
+      <Turnstile siteKey={turnstileSiteKey} />
       {status === "error" && Object.keys(errors).length === 0 && (
         <p className="field-error">Something went wrong. Please try again.</p>
       )}
@@ -131,7 +174,7 @@ export function ContactForm({ form }: { form: DeliveryForm }) {
   );
 }
 
-export function NewsletterForm({ form }: { form: DeliveryForm }) {
+export function NewsletterForm({ form, turnstileSiteKey }: { form: DeliveryForm; turnstileSiteKey?: string | null }) {
   const { values, set, status, submit } = useSubmit(form);
   const honeypot = form.honeypotField ?? null;
   const emailKey = form.fields.find((f) => f.type === "email")?.key ?? "email";
@@ -148,6 +191,7 @@ export function NewsletterForm({ form }: { form: DeliveryForm }) {
         onChange={(e) => set(emailKey, e.target.value)}
       />
       {honeypot && <Honeypot name={honeypot} value={values[honeypot] ?? ""} onChange={(v) => set(honeypot, v)} />}
+      <Turnstile siteKey={turnstileSiteKey} />
       <button className="btn" type="submit" disabled={status === "sending"}>
         {status === "sending" ? "…" : (form.submitLabel ?? "Subscribe")}
       </button>
