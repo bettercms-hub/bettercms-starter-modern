@@ -4,6 +4,11 @@ import { items, type NavLink, type Site, type Social } from "../lib/cms";
 import { getForms } from "../lib/content";
 import { NewsletterForm } from "./Forms";
 
+/**
+ * ⚠️ Deliberately carries NO `bcmsField` bindings. Everything here comes from the `site` SINGLETON —
+ * a different document from the page entry the Visual Editor loads — and `data-bcms-field` paths are
+ * rooted at THAT entry's field keys. Site chrome is edited via the site globals form, not on canvas.
+ */
 export function Footer({ site, newsletter }: { site?: Site; newsletter?: DeliveryForm }) {
   const nav: NavLink[] = items(site?.navLinks);
   const socials: Social[] = items(site?.socials);

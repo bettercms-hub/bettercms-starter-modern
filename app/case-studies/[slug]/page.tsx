@@ -32,16 +32,16 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
       <JsonLd data={jsonLd} />
       <article className="article">
         <Link className="back-link" href="/case-studies">← Back to work</Link>
-        {f.client && <p className="kicker" style={{ color: "var(--accent-strong)", fontWeight: 600, marginTop: "1.5rem" }}>{f.client}</p>}
-        <h1 {...bcmsField("case-study.title")} style={{ marginTop: "0.5rem" }} dangerouslySetInnerHTML={richHtml(f.title)} />
-        {f.summary && <p className="lead" style={{ marginTop: "1rem" }} dangerouslySetInnerHTML={richHtml(f.summary)} />}
-        {f.coverImage?.url && <img className="cover" src={f.coverImage.url} alt={f.coverImage.alt ?? ""} />}
+        {f.client && <p className="kicker" {...bcmsField("client")} style={{ color: "var(--accent-strong)", fontWeight: 600, marginTop: "1.5rem" }}>{f.client}</p>}
+        <h1 {...bcmsField("title")} style={{ marginTop: "0.5rem" }} dangerouslySetInnerHTML={richHtml(f.title)} />
+        {f.summary && <p className="lead" {...bcmsField("summary")} style={{ marginTop: "1rem" }} dangerouslySetInnerHTML={richHtml(f.summary)} />}
+        {f.coverImage?.url && <img className="cover" {...bcmsField("coverImage", "image")} src={f.coverImage.url} alt={f.coverImage.alt ?? ""} />}
         {metrics.length > 0 && (
-          <div className="stats" style={{ marginBottom: "2rem" }} {...bcmsField("case-study.metrics", "array")}>
-            {metrics.map((m, i) => <div className="stat" key={i}><div className="num">{m.value}</div><div className="lbl">{m.label}</div></div>)}
+          <div className="stats" style={{ marginBottom: "2rem" }} {...bcmsField("metrics", "array")}>
+            {metrics.map((m, i) => <div className="stat" key={i}><div className="num" {...bcmsField(`case-study.metrics[${i}].value`)}>{m.value}</div><div className="lbl" {...bcmsField(`case-study.metrics[${i}].label`)}>{m.label}</div></div>)}
           </div>
         )}
-        {f.body?.html && <div className="prose" {...bcmsField("case-study.body", "richtext")} dangerouslySetInnerHTML={{ __html: f.body.html }} />}
+        {f.body?.html && <div className="prose" {...bcmsField("body", "richtext")} dangerouslySetInnerHTML={{ __html: f.body.html }} />}
       </article>
     </main>
   );

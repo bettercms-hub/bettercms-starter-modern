@@ -25,9 +25,9 @@ export default function ContactPage() {
       <JsonLd data={jsonLd} />
       <div className="split">
         <div className="reveal">
-          {contact?.eyebrow && <p className="eyebrow" {...bcmsField("contact.eyebrow")} dangerouslySetInnerHTML={richHtml(contact.eyebrow)} />}
-          <h1 {...bcmsField("contact.heroTitle")} dangerouslySetInnerHTML={richHtml(contact?.heroTitle, "Get in touch")} />
-          {contact?.heroSubtitle && <p className="lead" style={{ marginTop: "1.25rem" }} {...bcmsField("contact.heroSubtitle")} dangerouslySetInnerHTML={richHtml(contact.heroSubtitle)} />}
+          {contact?.eyebrow && <p className="eyebrow" {...bcmsField("eyebrow")} dangerouslySetInnerHTML={richHtml(contact.eyebrow)} />}
+          <h1 {...bcmsField("heroTitle")} dangerouslySetInnerHTML={richHtml(contact?.heroTitle, "Get in touch")} />
+          {contact?.heroSubtitle && <p className="lead" style={{ marginTop: "1.25rem" }} {...bcmsField("heroSubtitle")} dangerouslySetInnerHTML={richHtml(contact.heroSubtitle)} />}
         </div>
         <div className="form-card reveal">
           {form ? <ContactForm form={form} turnstileSiteKey={getForms().turnstileSiteKey} /> : <p className="lead">Add a form named “Contact” in BetterCMS to enable this form.</p>}

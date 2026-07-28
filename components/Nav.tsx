@@ -5,6 +5,7 @@ import Link from "next/link";
 import { SearchModal } from "./SearchModal";
 import { items, type NavLink, type Site } from "../lib/cms";
 
+/** ⚠️ No `bcmsField` bindings — see Footer.tsx: nav chrome is the `site` singleton, not the page entry. */
 export function Nav({ site, projectId, pathMap }: { site?: Site; projectId: string | null; pathMap: Record<string, string> }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);

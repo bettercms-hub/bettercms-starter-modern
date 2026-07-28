@@ -29,12 +29,12 @@ export default function AboutPage() {
 
       <section className="section container">
         <div className="section-head reveal">
-          {about.eyebrow && <p className="eyebrow" {...bcmsField("about.eyebrow")} dangerouslySetInnerHTML={richHtml(about.eyebrow)} />}
-          <h1 {...bcmsField("about.heroTitle")} dangerouslySetInnerHTML={richHtml(about.heroTitle, "About")} />
-          {about.heroSubtitle && <p className="lead" style={{ marginTop: "1.25rem" }} {...bcmsField("about.heroSubtitle")} dangerouslySetInnerHTML={richHtml(about.heroSubtitle)} />}
+          {about.eyebrow && <p className="eyebrow" {...bcmsField("eyebrow")} dangerouslySetInnerHTML={richHtml(about.eyebrow)} />}
+          <h1 {...bcmsField("heroTitle")} dangerouslySetInnerHTML={richHtml(about.heroTitle, "About")} />
+          {about.heroSubtitle && <p className="lead" style={{ marginTop: "1.25rem" }} {...bcmsField("heroSubtitle")} dangerouslySetInnerHTML={richHtml(about.heroSubtitle)} />}
         </div>
         {about.heroImage?.url && (
-          <figure className="hero-figure reveal" style={{ marginTop: "3rem" }} {...bcmsField("about.heroImage", "image")}>
+          <figure className="hero-figure reveal" style={{ marginTop: "3rem" }} {...bcmsField("heroImage", "image")}>
             <img src={about.heroImage.url} alt={about.heroImage.alt ?? ""} />
           </figure>
         )}
@@ -43,8 +43,8 @@ export default function AboutPage() {
       {about.story?.html && (
         <section className="section--tight container">
           <div className="article" style={{ paddingBlock: 0 }}>
-            {about.storyTitle && <h2 className="reveal" {...bcmsField("about.storyTitle")} dangerouslySetInnerHTML={richHtml(about.storyTitle)} />}
-            <div className="prose reveal" style={{ marginTop: "1.5rem" }} {...bcmsField("about.story", "richtext")} dangerouslySetInnerHTML={{ __html: about.story.html }} />
+            {about.storyTitle && <h2 className="reveal" {...bcmsField("storyTitle")} dangerouslySetInnerHTML={richHtml(about.storyTitle)} />}
+            <div className="prose reveal" style={{ marginTop: "1.5rem" }} {...bcmsField("story", "richtext")} dangerouslySetInnerHTML={{ __html: about.story.html }} />
           </div>
         </section>
       )}
@@ -52,24 +52,27 @@ export default function AboutPage() {
       {values.length > 0 && (
         <section className="section container">
           <div className="section-head reveal"><p className="eyebrow">How we work</p><h2>What we value</h2></div>
-          <div className="bento" {...bcmsField("about.values", "array")}>
+          <div className="bento" {...bcmsField("values", "array")}>
             {values.map((v, i) => (
-              <article className="feature reveal" key={i}><h3>{v.title}</h3>{v.body && <p>{v.body}</p>}</article>
+              <article className="feature reveal" key={i}><h3 {...bcmsField(`about.values[${i}].title`)}>{v.title}</h3>{v.body && <p {...bcmsField(`about.values[${i}].body`)}>{v.body}</p>}</article>
             ))}
           </div>
         </section>
       )}
 
       {stats.length > 0 && (
-        <section className="section--tight"><div className="container"><div className="stats reveal" {...bcmsField("about.stats", "array")}>
-          {stats.map((s, i) => <div className="stat" key={i}><div className="num">{s.value}</div><div className="lbl">{s.label}</div></div>)}
+        <section className="section--tight"><div className="container"><div className="stats reveal" {...bcmsField("stats", "array")}>
+          {stats.map((s, i) => <div className="stat" key={i}><div className="num" {...bcmsField(`about.stats[${i}].value`)}>{s.value}</div><div className="lbl" {...bcmsField(`about.stats[${i}].label`)}>{s.label}</div></div>)}
         </div></div></section>
       )}
 
       {team.length > 0 && (
         <section className="section container">
           <div className="section-head reveal"><p className="eyebrow">The people</p><h2>Meet the studio</h2></div>
-          <div className="card-grid" {...bcmsField("about.team", "reference")}>
+          {/* Only the reference field itself is bound. `m.name`/`m.role`/`m.bio`/`m.avatar` live on the
+              referenced `author` ENTRY, not on this one — a page-scoped path would resolve against the
+              About entry and silently bind nothing. Authors are edited in their own collection. */}
+          <div className="card-grid" {...bcmsField("team", "reference")}>
             {team.map((m, i) => (
               <article className="feature reveal" key={i} style={{ display: "grid", gap: "1rem" }}>
                 {m.avatar?.url && <img src={m.avatar.url} alt={m.avatar.alt ?? m.name} style={{ width: "4rem", height: "4rem", borderRadius: "999px", objectFit: "cover" }} />}
