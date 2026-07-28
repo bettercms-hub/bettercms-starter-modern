@@ -2,7 +2,7 @@
   "name": "bettercms-starter-modern",
   "version": "0.1.0",
   "private": true,
-  "description": "BetterCMS Modern Aesthetic Starter (Next.js) — a premium, animated studio site (Home, About, Contact with form, Blog, Case Studies, search, schema markup, custom code), rendered from a BetterCMS project.",
+  "description": "BetterCMS Modern Aesthetic Starter (Next.js) \u2014 a premium, animated studio site (Home, About, Contact with form, Blog, Case Studies, search, schema markup, custom code), rendered from a BetterCMS project.",
   "type": "module",
   "scripts": {
     "dev": "next dev",
@@ -12,7 +12,7 @@
     "test:integration": "vitest run"
   },
   "dependencies": {
-    "@bettercms-ai/sdk": "^1.6.0",
+    "@bettercms-ai/sdk": "^1.10.0",
     "@gsap/react": "^2.1.2",
     "gsap": "^3.13.0",
     "next": "^15.0.0",
@@ -28,6 +28,6 @@
     "vitest": "^2.1.0"
   },
   "overrides": {
-    "@bettercms-ai/types": "1.5.0"
+    "@bettercms-ai/types": "1.7.0"
   }
 }
