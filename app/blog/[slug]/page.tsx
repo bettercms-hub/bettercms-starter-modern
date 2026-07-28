@@ -32,14 +32,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <JsonLd data={jsonLd} />
       <article className="article">
         <Link className="back-link" href="/blog">← Back to journal</Link>
-        {f.tags?.[0] && <p className="kicker" style={{ color: "var(--accent-strong)", fontWeight: 600, marginTop: "1.5rem" }}>{f.tags[0]}</p>}
-        <h1 {...bcmsField("blog-post.title")} style={{ marginTop: "0.5rem" }} dangerouslySetInnerHTML={richHtml(f.title)} />
+        {f.tags?.[0] && <p className="kicker" {...bcmsField("tags[0]")} style={{ color: "var(--accent-strong)", fontWeight: 600, marginTop: "1.5rem" }}>{f.tags[0]}</p>}
+        <h1 {...bcmsField("title")} style={{ marginTop: "0.5rem" }} dangerouslySetInnerHTML={richHtml(f.title)} />
+        {/* The byline is a COMPOSITE: `author` is a reference (its name/role live on the author entry)
+            and `publishedDate` is interleaved with separator text, so no single field owns this <p>. */}
         <p className="byline">
           {author && <>By <strong>{author.name}</strong>{author.role ? `, ${author.role}` : ""}</>}
           {author && f.publishedDate ? " · " : ""}{f.publishedDate}
         </p>
-        {f.coverImage?.url && <img className="cover" src={f.coverImage.url} alt={f.coverImage.alt ?? ""} />}
-        {f.body?.html && <div className="prose" {...bcmsField("blog-post.body", "richtext")} dangerouslySetInnerHTML={{ __html: f.body.html }} />}
+        {f.coverImage?.url && <img className="cover" {...bcmsField("coverImage", "image")} src={f.coverImage.url} alt={f.coverImage.alt ?? ""} />}
+        {f.body?.html && <div className="prose" {...bcmsField("body", "richtext")} dangerouslySetInnerHTML={{ __html: f.body.html }} />}
       </article>
     </main>
   );

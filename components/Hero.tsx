@@ -52,9 +52,9 @@ export function Hero({ data }: { data: Home }) {
   return (
     <section className="hero on-ink" ref={scope}>
       <div className="container">
-        {data.eyebrow && <p className="eyebrow hero-eyebrow" {...bcmsField("home.eyebrow")} dangerouslySetInnerHTML={richHtml(data.eyebrow)} />}
-        <h1 {...bcmsField("home.heroTitle")}><Words text={data.heroTitle} /></h1>
-        {data.heroSubtitle && <p className="lead hero-lead" {...bcmsField("home.heroSubtitle")} dangerouslySetInnerHTML={richHtml(data.heroSubtitle)} />}
+        {data.eyebrow && <p className="eyebrow hero-eyebrow" {...bcmsField("eyebrow")} dangerouslySetInnerHTML={richHtml(data.eyebrow)} />}
+        <h1 {...bcmsField("heroTitle")}><Words text={data.heroTitle} /></h1>
+        {data.heroSubtitle && <p className="lead hero-lead" {...bcmsField("heroSubtitle")} dangerouslySetInnerHTML={richHtml(data.heroSubtitle)} />}
         <div className="hero-cta">
           {data.primaryCtaText && data.primaryCtaHref && (
             <MagneticLink href={data.primaryCtaHref} className="btn btn--accent">
@@ -68,7 +68,7 @@ export function Hero({ data }: { data: Home }) {
       </div>
       {data.heroImage?.url && (
         <div className="container">
-          <figure className="hero-figure" {...bcmsField("home.heroImage", "image")}>
+          <figure className="hero-figure" {...bcmsField("heroImage", "image")}>
             <img src={data.heroImage.url} alt={data.heroImage.alt ?? ""} />
           </figure>
         </div>

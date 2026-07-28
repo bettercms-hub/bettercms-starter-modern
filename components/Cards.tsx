@@ -2,6 +2,12 @@ import Link from "next/link";
 import { refData, richHtml, type Author, type BlogPost, type CaseStudy } from "../lib/cms";
 import type { Entry } from "../lib/content";
 
+/**
+ * ⚠️ Deliberately carries NO `bcmsField` bindings. Cards render on the /blog and /case-studies INDEX
+ * pages, where every card belongs to a DIFFERENT entry than the one the Visual Editor has loaded.
+ * `data-bcms-field` paths are rooted at the loaded entry, so a card path would look bound and edit
+ * nothing (or worse, the wrong entry). Post/study fields are bound on their detail pages instead.
+ */
 export function BlogCard({ post }: { post: Entry<BlogPost> }) {
   const f = post.data;
   const author = refData<Author>(f.author);
