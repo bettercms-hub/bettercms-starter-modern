@@ -24,11 +24,13 @@ export function SearchModal({
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<Array<Hit & { href: string }>>([]);
   const [loading, setLoading] = useState(false);
+  /** Non-null when the endpoint said something other than "here are your results". */
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 0);
-    else { setQ(""); setHits([]); }
+    else { setQ(""); setHits([]); setError(null); }
   }, [open]);
 
   useEffect(() => {
@@ -46,12 +48,27 @@ export function SearchModal({
       try {
         const url = `${API}/api/v1/delivery/search?project=${encodeURIComponent(project)}&q=${encodeURIComponent(q)}&limit=8`;
         const res = await fetch(url, { signal: ctrl.signal });
+        // The API distinguishes "search is switched off for this site" (404) from "nothing
+        // matched" (200 with no hits). Reading `data.hits ?? []` collapsed the two, so a site
+        // with search disabled told every visitor their query had no results.
+        if (!res.ok) {
+          setHits([]);
+          setError(res.status === 404
+            ? "Search isn’t available on this site."
+            : "Search is temporarily unavailable.");
+          return;
+        }
         const data = (await res.json()) as { hits?: Hit[] };
         const mapped = (data.hits ?? [])
           .map((h) => ({ ...h, href: pathMap[h.slug] ?? (h.type === "page" ? h.url : "") }))
           .filter((h) => h.href);
+        setError(null);
         setHits(mapped);
-      } catch { /* aborted or offline — keep prior results */ }
+      } catch (err) {
+        if ((err as Error)?.name === "AbortError") return; // superseded by a newer keystroke
+        setHits([]);
+        setError("Search is temporarily unavailable.");
+      }
       finally { setLoading(false); }
     }, 200);
     return () => { clearTimeout(t); ctrl.abort(); };
@@ -82,7 +99,9 @@ export function SearchModal({
             </Link>
           ))}
           {!loading && q.trim().length >= 2 && hits.length === 0 && (
-            <p className="search-empty">{project ? `No results for “${q}”.` : "Search is temporarily unavailable."}</p>
+            <p className="search-empty">
+              {error ?? (project ? `No results for “${q}”.` : "Search is temporarily unavailable.")}
+            </p>
           )}
           {q.trim().length < 2 && <p className="search-empty">Type at least two characters to search.</p>}
         </div>
