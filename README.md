@@ -21,23 +21,27 @@ point it at any BetterCMS project with the same model slugs.
 - **Live preview** — editable fields carry `data-bcms-field` attributes on every build, so the
   dashboard live preview maps them to inline editors.
 
-## Known limitation — this starter does not render BetterCMS *pages*
+## Sections follow the page's block list
 
-This is a **hand-authored showcase**, not a block-driven site. Every section (`Hero`, `Stats`,
-`Features`, `Testimonials`, `CtaBand`, the contact and newsletter forms) is a bespoke React
-component reading typed fields off the `home` / `about` / `contact` singletons. Accordingly
-`scripts/fetch-content.mjs` fetches **entries and forms only — never `pages`**, and nothing here
-mounts `<BcmsBlocks>`. Its only BetterCMS dependency is `@bettercms-ai/sdk`.
+Home and About are drawn by this repo's own components (`Hero`, `Stats`, …) reading the `home` /
+`about` entries — and **which of those sections render, and in what order, is the BetterCMS page's
+block list**, the way a Sanity page-builder array is the page. Each section is a `component` block on
+the page, bound to its component by `props.bind` (`hero`, `stats`, `features`, `logos`,
+`testimonials`, `cta` on Home; `hero`, `story`, `values`, `stats`, `team` on About):
 
-**What that means:** anything you place on a *page* in the Visual Editor — a form block, a
-section, a slider — renders **nothing** on this site. Those pages have no route here at all.
-Edit the content-model entries instead; the BetterCMS entry form is the editing surface for this
-design, and live preview still maps to it through `data-bcms-field`.
+- `scripts/fetch-content.mjs` writes the published pages into `bcms-content.json` beside the entries;
+- `lib/sections.ts` (`sectionPlan`) turns a page's blocks into the sections to draw — moved, removed
+  and duplicated sections included — and falls back to the design's own order when the page has no
+  block list yet;
+- `components/PageSections.tsx` renders them in that order, each inside a root carrying
+  `sectionRootAttrs(block)` from `@bettercms-ai/next` (`data-bcms-block`, `data-bcms-style`), which is
+  how the Visual Editor finds a section and how BetterCMS knows this site follows the order set in the
+  editor.
 
-**If you want the Visual Editor's block canvas to drive the site**, use `bettercms-starter`
-(Next) or `bettercms-starter-astro` — both mount `<BcmsBlocks>` and render whatever the builder
-produces. Don't try to mix the two on one page: a page is either block-driven or field-driven,
-and adding fields to a block page breaks its canvas binding.
+So adding, moving, swapping and removing sections in the Visual Editor changes the live site on the
+next build. A section added from the BetterCMS library that this design has no component for is
+skipped (the editor says so on its row). Contact, Blog and Case Studies stay field- and
+collection-driven.
 
 ## Local development
 

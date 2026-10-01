@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { getSingleton } from "../lib/content";
+import { getPageBlocks, getSingleton } from "../lib/content";
+import { sectionPlan } from "../lib/sections";
+import { PageSections } from "../components/PageSections";
 import { items, plain, type Home, type Site } from "../lib/cms";
 import { seo } from "../lib/seo";
 import { JsonLd } from "../components/JsonLd";
@@ -33,12 +35,19 @@ export default function HomePage() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <Hero data={home} ctas={<HeroCtas data={home} />} />
-      <section className="section--tight"><div className="container"><Stats data={items(home.stats)} /></div></section>
-      <Features heading={home.featuresHeading} data={items(home.features)} />
-      <LogoMarquee data={items(home.logos)} />
-      <Testimonials data={items(home.testimonials)} />
-      <CtaBand data={home} />
+      {/* The Home page's BetterCMS block list sets which sections render and in what order; the
+          design's own order until the page has one. @see sectionPlan */}
+      <PageSections
+        sections={sectionPlan(getPageBlocks("home"), ["hero", "stats", "features", "logos", "testimonials", "cta"])}
+        render={{
+          hero: () => <Hero data={home} ctas={<HeroCtas data={home} />} />,
+          stats: () => <section className="section--tight"><div className="container"><Stats data={items(home.stats)} /></div></section>,
+          features: () => <Features heading={home.featuresHeading} data={items(home.features)} />,
+          logos: () => <LogoMarquee data={items(home.logos)} />,
+          testimonials: () => <Testimonials data={items(home.testimonials)} />,
+          cta: () => <CtaBand data={home} />,
+        }}
+      />
     </>
   );
 }

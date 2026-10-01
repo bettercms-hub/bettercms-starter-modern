@@ -12,6 +12,8 @@ export type Entry<T> = { slug: string; data: T };
 type Snapshot = {
   projectId?: string | null;
   collections?: Record<string, Entry<unknown>[]>;
+  /** Published BetterCMS pages: each one's ordered section blocks. @see getPageBlocks */
+  pages?: { slug?: string; projectId?: string | null; blocks?: unknown }[];
   forms?: DeliveryForm[];
   turnstileSiteKey?: string | null;
 };
@@ -39,6 +41,16 @@ export function getEntry<T>(model: string, slug: string): Entry<T> | undefined {
 /** Singleton models (site/home/about/contact) have exactly one entry. */
 export function getSingleton<T>(model: string): T | undefined {
   return listEntries<T>(model)[0]?.data;
+}
+
+/**
+ * The published block list of the BetterCMS page `slug` — its sections, in order — or undefined when the
+ * snapshot has none (a fresh project, or a snapshot written before it carried pages). @see sectionPlan
+ */
+export function getPageBlocks(slug: string): unknown {
+  const s = snapshot();
+  const page = (s.pages ?? []).find((p) => p.slug === slug && (!s.projectId || !p.projectId || p.projectId === s.projectId));
+  return page?.blocks;
 }
 
 export function getForms(): { forms: DeliveryForm[]; turnstileSiteKey: string | null } {

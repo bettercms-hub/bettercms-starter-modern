@@ -22,9 +22,22 @@ const get = async (path) => {
   return (await res.json())?.data ?? null;
 };
 
-const [entries, forms] = await Promise.all([
+// Every published page, for its ordered section blocks (the order the Visual Editor sets).
+const getPages = async () => {
+  const items = [];
+  for (let page = 1, total = 1; page <= total; page++) {
+    const data = await get(`pages?page=${page}&perPage=100`);
+    if (!data) break;
+    items.push(...(data.items ?? []));
+    total = data.totalPages ?? 1;
+  }
+  return items;
+};
+
+const [entries, forms, pages] = await Promise.all([
   get("content-entries?perPage=200&depth=1"),
   get("forms"),
+  getPages(),
 ]);
 
 // Group entries by model slug → `collections` (matches the deploy Action's snapshot). Singletons
@@ -45,6 +58,7 @@ const snapshot = {
   projectId,
   collections,
   forms: forms?.items ?? [],
+  pages,
   turnstileSiteKey: forms?.turnstileSiteKey ?? null,
 };
 await writeFile("bcms-content.json", JSON.stringify(snapshot, null, 2));
