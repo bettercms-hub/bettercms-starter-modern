@@ -1,13 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { useRef, type ReactNode } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
-/** A link that gently follows the pointer (magnetic). No-op under reduced motion. */
-export function MagneticLink({ href, className, children }: { href: string; className?: string; children: ReactNode }) {
-  const ref = useRef<HTMLAnchorElement>(null);
+/**
+ * Wraps a button so it gently follows the pointer (magnetic). No-op under reduced motion.
+ * A wrapper rather than a link of its own, so the button inside can be any element — here the
+ * `<BcmsButton>` the BetterCMS editor finds as one button.
+ */
+export function Magnetic({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLSpanElement>(null);
 
   useGSAP(
     () => {
@@ -28,5 +31,5 @@ export function MagneticLink({ href, className, children }: { href: string; clas
     { scope: ref },
   );
 
-  return <Link ref={ref} href={href} className={className}>{children}</Link>;
+  return <span ref={ref} className="magnetic">{children}</span>;
 }

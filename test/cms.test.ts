@@ -1,6 +1,6 @@
 /** Pure accessor self-check: the shapes the components rely on (zoned arrays, hydrated refs). */
 import { describe, it, expect } from "vitest";
-import { items, refData, refList, type Author } from "../lib/cms";
+import { ctaButton, items, refData, refList, type Author } from "../lib/cms";
 
 describe("cms accessors", () => {
   it("unwraps a zoned-repeatable array field", () => {
@@ -23,5 +23,25 @@ describe("cms accessors", () => {
     ]);
     expect(team.map((m) => m.name)).toEqual(["Maya", "Leo"]);
     expect(refList<Author>(undefined)).toEqual([]);
+  });
+});
+
+/**
+ * A call to action is one `button` field, rendered with <BcmsButton>, and a site seeded before the
+ * field existed keeps its buttons: `ctaButton` falls back to the flat label + link pair.
+ */
+describe("ctaButton", () => {
+  it("prefers the button field, with the drawn look where none was picked", () => {
+    expect(ctaButton({ label: "Start", href: "/contact" }, "Old", "/old", { arrow: true })).toEqual({ arrow: true, label: "Start", href: "/contact" });
+    expect(ctaButton({ label: "Start", href: "/contact", variant: "dark", arrow: false }, undefined, undefined, { arrow: true })).toEqual({ arrow: false, label: "Start", href: "/contact", variant: "dark" });
+  });
+
+  it("falls back to the old pair when the button field is empty", () => {
+    expect(ctaButton(undefined, "Start a project", "/contact", { arrow: true })).toEqual({ arrow: true, label: "Start a project", href: "/contact" });
+    expect(ctaButton({ label: "", href: "" }, "See our work", "/case-studies", { variant: "outline" })).toEqual({ variant: "outline", label: "See our work", href: "/case-studies" });
+  });
+
+  it("is null without both words and a link", () => {
+    expect(ctaButton(undefined, "Start", undefined)).toBeNull();
   });
 });

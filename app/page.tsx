@@ -4,7 +4,7 @@ import { items, plain, type Home, type Site } from "../lib/cms";
 import { seo } from "../lib/seo";
 import { JsonLd } from "../components/JsonLd";
 import { Hero } from "../components/Hero";
-import { Stats, Features, LogoMarquee, Testimonials, CtaBand } from "../components/Sections";
+import { Stats, Features, LogoMarquee, Testimonials, CtaBand, HeroCtas } from "../components/Sections";
 
 export function generateMetadata(): Metadata {
   const home = getSingleton<Home>("home");
@@ -33,7 +33,7 @@ export default function HomePage() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <Hero data={home} />
+      <Hero data={home} ctas={<HeroCtas data={home} />} />
       <section className="section--tight"><div className="container"><Stats data={items(home.stats)} /></div></section>
       <Features heading={home.featuresHeading} data={items(home.features)} />
       <LogoMarquee data={items(home.logos)} />

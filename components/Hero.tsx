@@ -1,10 +1,9 @@
 "use client";
 
-import { Fragment, useRef } from "react";
+import { Fragment, useRef, type ReactNode } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { MagneticLink } from "./MagneticLink";
 import { bcmsField } from "../lib/bcms";
 import { plain, richHtml, type Home, type TextOrRich } from "../lib/cms";
 
@@ -27,7 +26,11 @@ function Words({ text }: { text?: TextOrRich }) {
   );
 }
 
-export function Hero({ data }: { data: Home }) {
+/**
+ * `ctas`: the hero's buttons, rendered by the page (a server component) — `<BcmsButton>` comes
+ * from the SDK's root export, which also carries server-only helpers. @see HeroCtas
+ */
+export function Hero({ data, ctas }: { data: Home; ctas?: ReactNode }) {
   const scope = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -55,16 +58,7 @@ export function Hero({ data }: { data: Home }) {
         {data.eyebrow && <p className="eyebrow hero-eyebrow" {...bcmsField("eyebrow")} dangerouslySetInnerHTML={richHtml(data.eyebrow)} />}
         <h1 {...bcmsField("heroTitle")}><Words text={data.heroTitle} /></h1>
         {data.heroSubtitle && <p className="lead hero-lead" {...bcmsField("heroSubtitle")} dangerouslySetInnerHTML={richHtml(data.heroSubtitle)} />}
-        <div className="hero-cta">
-          {data.primaryCtaText && data.primaryCtaHref && (
-            <MagneticLink href={data.primaryCtaHref} className="btn btn--accent">
-              {data.primaryCtaText} <span className="arrow">→</span>
-            </MagneticLink>
-          )}
-          {data.secondaryCtaText && data.secondaryCtaHref && (
-            <MagneticLink href={data.secondaryCtaHref} className="btn btn--ghost">{data.secondaryCtaText}</MagneticLink>
-          )}
-        </div>
+        <div className="hero-cta">{ctas}</div>
       </div>
       {data.heroImage?.url && (
         <div className="container">
