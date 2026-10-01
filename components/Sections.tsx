@@ -1,6 +1,6 @@
-import { items, type Feature, type Home, type Logo, type Stat, type Testimonial } from "../lib/cms";
+import { ctaButton, items, type Feature, type Home, type Logo, type Stat, type Testimonial } from "../lib/cms";
 import { bcmsField } from "../lib/bcms";
-import { MagneticLink } from "./MagneticLink";
+import { CtaButton } from "./CtaButton";
 
 export function Stats({ data, onInk = false }: { data?: Stat[]; onInk?: boolean }) {
   const list = data ?? [];
@@ -86,6 +86,16 @@ export function Testimonials({ data }: { data: Testimonial[] }) {
   );
 }
 
+/** The hero's buttons, as drawn: the accent button with a trailing arrow, then an outlined one. */
+export function HeroCtas({ data }: { data: Home }) {
+  return (
+    <>
+      <CtaButton path="primaryCta" value={ctaButton(data.primaryCta, data.primaryCtaText, data.primaryCtaHref, { arrow: true })} />
+      <CtaButton path="secondaryCta" value={ctaButton(data.secondaryCta, data.secondaryCtaText, data.secondaryCtaHref, { variant: "outline" })} />
+    </>
+  );
+}
+
 export function CtaBand({ data }: { data: Home }) {
   if (!data.ctaHeading) return null;
   return (
@@ -93,11 +103,7 @@ export function CtaBand({ data }: { data: Home }) {
       <div className="cta on-ink reveal">
         <h2 {...bcmsField("ctaHeading")}>{data.ctaHeading}</h2>
         {data.ctaBody && <p className="lead" {...bcmsField("ctaBody")}>{data.ctaBody}</p>}
-        {data.ctaButtonText && data.ctaButtonHref && (
-          <MagneticLink href={data.ctaButtonHref} className="btn btn--accent">
-            {data.ctaButtonText} <span className="arrow">→</span>
-          </MagneticLink>
-        )}
+        <CtaButton path="ctaButton" value={ctaButton(data.ctaButton, data.ctaButtonText, data.ctaButtonHref, { arrow: true })} />
       </div>
     </section>
   );

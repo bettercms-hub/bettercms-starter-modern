@@ -50,9 +50,16 @@ export type Home = {
   heroTitle: TextOrRich;
   heroSubtitle?: TextOrRich;
   heroImage?: Image;
+  /** The hero's calls to action: one `button` field each. */
+  primaryCta?: ButtonValue;
+  secondaryCta?: ButtonValue;
+  /** @deprecated The pair a site seeded before `primaryCta`; read only as its fallback. */
   primaryCtaText?: string;
+  /** @deprecated @see primaryCtaText */
   primaryCtaHref?: string;
+  /** @deprecated @see primaryCtaText */
   secondaryCtaText?: string;
+  /** @deprecated @see primaryCtaText */
   secondaryCtaHref?: string;
   stats?: Repeatable<Stat>;
   featuresHeading?: string;
@@ -61,9 +68,41 @@ export type Home = {
   testimonials?: Repeatable<Testimonial>;
   ctaHeading?: string;
   ctaBody?: string;
+  ctaButton?: ButtonValue;
+  /** @deprecated @see primaryCtaText */
   ctaButtonText?: string;
+  /** @deprecated @see primaryCtaText */
   ctaButtonHref?: string;
 };
+
+// ── Buttons ───────────────────────────────────────────────────────────────────────────────────────
+/**
+ * A `button` field's value: the words, the link and the look an author picks in the BetterCMS
+ * visual editor. Rendered with `<BcmsButton>` so the editor finds it as one button.
+ */
+export type ButtonValue = {
+  label?: string;
+  href?: string;
+  variant?: string;
+  size?: string;
+  arrow?: boolean;
+  icon?: string | null;
+  newTab?: boolean;
+};
+
+/**
+ * A call to action as one button value: the `button` field when it holds a label, else the flat
+ * label + link pair a site seeded before the field existed — so a site built from an older copy of
+ * this starter keeps its buttons. Null when neither has both words and a link.
+ *
+ * `look` is this button's default look, the one the design was drawn with: it applies only where
+ * the author has not picked one, so an untouched site renders exactly as before.
+ */
+export function ctaButton(button: ButtonValue | undefined, label?: string, href?: string, look: Pick<ButtonValue, "variant" | "arrow"> = {}): ButtonValue | null {
+  const value = button?.label ? button : { label, href };
+  if (!value.label || !value.href) return null;
+  return { ...look, ...value };
+}
 
 export type About = {
   eyebrow?: TextOrRich;

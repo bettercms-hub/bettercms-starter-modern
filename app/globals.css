@@ -148,6 +148,24 @@ h3 { font-size: var(--step-1); letter-spacing: -0.01em; }
 .btn--ghost:hover { background: var(--paper-2); box-shadow: none; }
 .on-ink .btn--ghost { border-color: oklch(0.74 0.014 80 / 0.35); }
 .on-ink .btn--ghost:hover { background: oklch(1 0 0 / 0.06); }
+/* The looks an author can pick in the BetterCMS visual editor. <BcmsButton> writes them as
+   data-variant / data-size, the attributes the editor repaints and in-place publishing updates, so
+   they are styled here by attribute. Primary is the accent button and outline the ghost one, as drawn. */
+.btn[data-variant="primary"], .btn[data-variant="brand"] { --bg-btn: var(--accent); --fg-btn: var(--ink); }
+.btn[data-variant="secondary"], .btn[data-variant="outline"], .btn[data-variant="tertiary"] { --bg-btn: transparent; --fg-btn: currentColor; border: 1px solid var(--line-strong); }
+.btn[data-variant="secondary"]:hover, .btn[data-variant="outline"]:hover, .btn[data-variant="tertiary"]:hover { background: var(--paper-2); box-shadow: none; }
+.on-ink .btn[data-variant="secondary"], .on-ink .btn[data-variant="outline"], .on-ink .btn[data-variant="tertiary"] { border-color: oklch(0.74 0.014 80 / 0.35); }
+.on-ink .btn[data-variant="secondary"]:hover, .on-ink .btn[data-variant="outline"]:hover, .on-ink .btn[data-variant="tertiary"]:hover { background: oklch(1 0 0 / 0.06); }
+.btn[data-variant="dark"] { --bg-btn: var(--ink); --fg-btn: var(--paper); }
+.btn[data-variant="light"] { --bg-btn: var(--paper); --fg-btn: var(--ink); }
+.btn[data-variant="link"] { --bg-btn: transparent; --fg-btn: currentColor; padding-inline: 0; text-decoration: underline; text-underline-offset: 0.2em; }
+.btn[data-variant="link"]:hover { box-shadow: none; }
+.btn[data-size="sm"] { padding: 0.6em 1.05em; font-size: var(--step--1); }
+.btn[data-size="lg"] { padding: 1.05em 1.8em; font-size: var(--step-1); }
+.btn .bcms-btn-icon, .btn .bcms-btn-arrow { width: 1em; height: 1em; flex: none; }
+.btn .bcms-btn-arrow { transition: transform var(--dur) var(--ease); }
+.btn:hover .bcms-btn-arrow { transform: translateX(4px); }
+.magnetic { display: inline-flex; }
 
 /* ── Header / nav ────────────────────────────────────────────────────────────────────────────── */
 .header { position: sticky; top: 0; z-index: 50; }

@@ -58,6 +58,9 @@ function useSubmit(form: DeliveryForm) {
   return { values, set, errors, status, submit };
 }
 
+/** This form draws text, choice and checkbox fields only; a multi-value answer reads as its list. */
+const scalar = (v: FormValues[string] | undefined): string | boolean => (Array.isArray(v) ? v.join(", ") : (v ?? ""));
+
 function Field({ field, value, error, onChange }: {
   field: DeliveryFormField;
   value: string | boolean;
@@ -160,9 +163,9 @@ export function ContactForm({ form, turnstileSiteKey }: { form: DeliveryForm; tu
       {form.fields
         .filter((f) => f.key !== honeypot && shouldShowField(f, values))
         .map((f) => (
-          <Field key={f.key} field={f} value={values[f.key] ?? ""} error={errors[f.key]} onChange={(v) => set(f.key, v)} />
+          <Field key={f.key} field={f} value={scalar(values[f.key])} error={errors[f.key]} onChange={(v) => set(f.key, v)} />
         ))}
-      {honeypot && <Honeypot name={honeypot} value={values[honeypot] ?? ""} onChange={(v) => set(honeypot, v)} />}
+      {honeypot && <Honeypot name={honeypot} value={String(values[honeypot] ?? "")} onChange={(v) => set(honeypot, v)} />}
       <Turnstile siteKey={turnstileSiteKey} />
       {status === "error" && Object.keys(errors).length === 0 && (
         <p className="field-error">Something went wrong. Please try again.</p>
@@ -190,7 +193,7 @@ export function NewsletterForm({ form, turnstileSiteKey }: { form: DeliveryForm;
         value={String(values[emailKey] ?? "")}
         onChange={(e) => set(emailKey, e.target.value)}
       />
-      {honeypot && <Honeypot name={honeypot} value={values[honeypot] ?? ""} onChange={(v) => set(honeypot, v)} />}
+      {honeypot && <Honeypot name={honeypot} value={String(values[honeypot] ?? "")} onChange={(v) => set(honeypot, v)} />}
       <Turnstile siteKey={turnstileSiteKey} />
       <button className="btn" type="submit" disabled={status === "sending"}>
         {status === "sending" ? "…" : (form.submitLabel ?? "Subscribe")}
