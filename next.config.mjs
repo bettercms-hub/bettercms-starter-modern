@@ -5,6 +5,9 @@
 export default {
   output: "export",
   images: { unoptimized: true },
+  // `npm run build:bcms` (what BetterCMS builds with) skips Next's type check: a deploy needs the
+  // site, not the check, and `npm run build` — what CI and you run — still type-checks everything.
+  typescript: { ignoreBuildErrors: process.env.BCMS_SKIP_TYPECHECK === "1" },
   // The contact/search/newsletter client components import @bettercms-ai/sdk, which pulls in the SDK's
   // Node-only management client (dns/fs). Those paths never run in the browser, so stub the Node
   // builtins out of the client bundle.
